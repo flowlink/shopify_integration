@@ -25,11 +25,11 @@ The following parameters must be setup within [FlowLink](http://flowlink.io/):
 ## Webhooks
 
 The following webhooks are implemented. For all 'get_' webhooks, a
-'shopify_id' field is return that use used to tie a Wombat object to its
+'shopify_id' field is return that use used to tie a FlowLink object to its
 corresponding Shopify object.
 
 * **get_orders**: Retrieves a list of orders from Shopify with all details
-  of line items, taxes, discounts, shipping charges etc in Wombat official
+  of line items, taxes, discounts, shipping charges etc in FlowLink official
   format. Each order's 'id' will be the Shopify order ID. 'source' will be set
   to your shopify_host parameter value. Also returns a list of shipment
   objects associated with all orders.
@@ -49,17 +49,17 @@ corresponding Shopify object.
 
 ## Notes
 
-There are various differences between how Wombat and Shopify handle objects
+There are various differences between how FlowLink and Shopify handle objects
 that are worth noting and watching out for:
 
 * Products: First, Shopify *only* stores SKU and price values in variants,
-  while Wombat has a sort of base product with a SKU and a price,
+  while FlowLink has a sort of base product with a SKU and a price,
   along with variants, which also have SKUs and prices. This integration
-  ignores Wombat's base SKU and price and only uses those from variants.
+  ignores FlowLink's base SKU and price and only uses those from variants.
   Second, Shopify only associates images only with base products, not for
-  each variant, while Wombat associates images with the base product AND
-  its variants. So, when adding a Wombat product to Shopify, we add all
-  Wombat images to the Shopify base product. The 'gotcha' here is that
+  each variant, while FlowLink associates images with the base product AND
+  its variants. So, when adding a FlowLink product to Shopify, we add all
+  FlowLink images to the Shopify base product. The 'gotcha' here is that
   products added to Shopify with images associated with variants will lose
   that association. Finally, Shopify checks if image URLs are valid prior
   to adding them, and will fail to add an image URL silently if not.
