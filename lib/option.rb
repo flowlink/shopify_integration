@@ -1,14 +1,14 @@
 class Option
 
-  def add_wombat_obj wombat_option
-    @name = wombat_option
+  def add_flowlink_obj flowlink_option
+    @name = flowlink_option
   end
   
   def add_shopify_obj shopify_option
     @name = shopify_option['name']
   end
   
-  def wombat_obj
+  def flowlink_obj
     @name
   end
 

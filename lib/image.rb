@@ -6,12 +6,12 @@ class Image
     @position = shopify_image['position']
   end
 
-  def add_wombat_obj wombat_image
-    @url = wombat_image['url']
-    @position = wombat_image['position']
+  def add_flowlink_obj flowlink_image
+    @url = flowlink_image['url']
+    @position = flowlink_image['position']
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'url' => @url,
       'position' => @position

@@ -13,7 +13,7 @@ class LineItem
     self
   end
 
-  def wombat_obj
+  def flowlink_obj
     [
       {
         'product_id' => @sku,
