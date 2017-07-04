@@ -1,5 +1,5 @@
 @dir = File.expand_path(File.dirname(__FILE__))
-listen File.join(@dir, "../unicorn.sock"), :backlog => 1024
+#listen File.join(@dir, "../unicorn.sock"), :backlog => 1024
 
 worker_processes ENV.fetch('WORKER_PROCESSES', 3).to_i
 timeout 180
@@ -24,7 +24,7 @@ before_fork do |server, worker|
   sleep 1
 end
 
-after_fork do |server, worker|
+after_fork do |_server, _worker|
   defined?(ActiveRecord::Base) and ActiveRecord::Base.establish_connection
 
   defined?(Rails) and Rails.cache.respond_to?(:reconnect) and Rails.cache.reconnect
