@@ -34,24 +34,24 @@ class Variant
     self
   end
 
-  def add_wombat_obj wombat_variant
-    @shopify_id = wombat_variant['shopify_id'] # or fetch it by sku?
-    @price = wombat_variant['price'].to_f
-    @sku = wombat_variant['sku']
-    @quantity = wombat_variant['quantity'].to_i
+  def add_flowlink_obj flowlink_variant
+    @shopify_id = flowlink_variant['shopify_id'] # or fetch it by sku?
+    @price = flowlink_variant['price'].to_f
+    @sku = flowlink_variant['sku']
+    @quantity = flowlink_variant['quantity'].to_i
     @options = Hash.new
 
-    unless wombat_variant['options'].nil?
-      wombat_variant['options'].values.each_with_index do |value, index|
+    unless flowlink_variant['options'].nil?
+      flowlink_variant['options'].values.each_with_index do |value, index|
         @options['option' + (index + 1).to_s] = value
       end
     end
 
     @images = Array.new
-    unless wombat_variant['images'].nil?
-      wombat_variant['images'].each do |wombat_image|
+    unless flowlink_variant['images'].nil?
+      flowlink_variant['images'].each do |flowlink_image|
         image = Image.new
-        image.add_wombat_obj wombat_image
+        image.add_flowlink_obj flowlink_image
         @images << image
       end
     end
@@ -69,7 +69,7 @@ class Variant
     }
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'sku' => @sku,
       'shopify_id' => @shopify_id.to_s,

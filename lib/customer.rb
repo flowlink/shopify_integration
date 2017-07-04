@@ -11,16 +11,16 @@ class Customer
     @source = Util.shopify_host shopify_api.config
   end
 
-  def add_wombat_obj wombat_customer, shopfiy_api
-    @shopify_id = wombat_customer['shopify_id']
-    @firstname = wombat_customer['firstname']
-    @lastname = wombat_customer['lastname']
-    @email = wombat_customer['email']
-    @shipping_address = Address.new.add_wombat_obj(wombat_customer['shipping_address'])
-    @billing_address = Address.new.add_wombat_obj(wombat_customer['billing_address'])
+  def add_flowlink_obj flowlink_customer, shopfiy_api
+    @shopify_id = flowlink_customer['shopify_id']
+    @firstname = flowlink_customer['firstname']
+    @lastname = flowlink_customer['lastname']
+    @email = flowlink_customer['email']
+    @shipping_address = Address.new.add_flowlink_obj(flowlink_customer['shipping_address'])
+    @billing_address = Address.new.add_flowlink_obj(flowlink_customer['billing_address'])
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'id' => @shopify_id.to_s,
       'shopify_id' => @shopify_id.to_s,
@@ -28,8 +28,8 @@ class Customer
       'firstname' => @firstname,
       'lastname' => @lastname,
       'email' => @email,
-      'shipping_address' => @default_address.wombat_obj,
-      'billing_address' => @default_address.wombat_obj
+      'shipping_address' => @default_address.flowlink_obj,
+      'billing_address' => @default_address.flowlink_obj
     }
   end
 

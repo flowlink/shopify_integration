@@ -7,7 +7,7 @@ class Payment
     self
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'status' => 'completed',
       'amount' => @amount.to_f,

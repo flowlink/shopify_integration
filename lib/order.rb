@@ -66,7 +66,7 @@ class Order
     self
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'id' => @store_name.upcase + '-' + @order_number.to_s,
       'shopify_id' => @shopify_id.to_s,
@@ -83,7 +83,7 @@ class Order
         'payment' => @totals_payment,
         'order' => @totals_order
       },
-      'line_items' => Util.wombat_array(@line_items),
+      'line_items' => Util.flowlink_array(@line_items),
       'adjustments' => [
         {
           'name' => 'Tax',
@@ -100,7 +100,7 @@ class Order
       ],
       'shipping_address' => @shipping_address,
       'billing_address' => @billing_address,
-      'payments' => Util.wombat_array(@payments)
+      'payments' => Util.flowlink_array(@payments)
     }
   end
 

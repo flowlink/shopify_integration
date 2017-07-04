@@ -14,21 +14,21 @@ class Address
     self
   end
   
-  def add_wombat_obj wombat_address
-    return self if wombat_address.nil?
+  def add_flowlink_obj flowlink_address
+    return self if flowlink_address.nil?
 
-    @address1 = wombat_address['address1']
-    @address2 = wombat_address['address2']
-    @zipcode = wombat_address['zipcode']
-    @city = wombat_address['city']
-    @state = wombat_address['state']
-    @country = wombat_address['country']
-    @phone = wombat_address['phone']
+    @address1 = flowlink_address['address1']
+    @address2 = flowlink_address['address2']
+    @zipcode = flowlink_address['zipcode']
+    @city = flowlink_address['city']
+    @state = flowlink_address['state']
+    @country = flowlink_address['country']
+    @phone = flowlink_address['phone']
     
     self
   end
   
-  def wombat_obj
+  def flowlink_obj
     {
       'address1' => @address1.nil? ? "" : @address1,
       'address2' => @address2.nil? ? "" : @address2,

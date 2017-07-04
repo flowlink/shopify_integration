@@ -26,8 +26,8 @@ class ShopifyIntegration < EndpointBase::Sinatra::Base
         action_type = action.split('_')[0]
 
         ## Add and update shouldn't come with a shopify_id, therefore when
-        ## they do, it indicates Wombat resending an object.
-        if wombat_resend_add?(action_type, obj_name) ||
+        ## they do, it indicates FlowLink resending an object.
+        if flowlink_resend_add?(action_type, obj_name) ||
              update_without_shopify_id?(action_type, obj_name)
            return result 200
         end
@@ -38,26 +38,26 @@ class ShopifyIntegration < EndpointBase::Sinatra::Base
         case action_type
         when 'get'
           response['objects'].each do |obj|
-            ## Check if object has a metafield with a Wombat ID in it,
-            ## if so change object ID to that prior to adding to Wombat
-            wombat_id = shopify.wombat_id_metafield obj_name, obj['shopify_id']
-            unless wombat_id.nil?
-              obj['id'] = wombat_id
+            ## Check if object has a metafield with a FlowLink ID in it,
+            ## if so change object ID to that prior to adding to FlowLink
+            flowlink_id = shopify.flowlink_id_metafield obj_name, obj['shopify_id']
+            unless flowlink_id.nil?
+              obj['id'] = flowlink_id
             end
 
-            ## Add object to Wombat
+            ## Add object to FlowLink
             add_object obj_name, obj
           end
           add_parameter 'since', Time.now.utc.iso8601
 
         when 'add'
-          ## This will do a partial update in Wombat, only the new key
+          ## This will do a partial update in FlowLink, only the new key
           ## shopify_id will be added, everything else will be the same
           add_object obj_name,
                      { 'id' => @payload[obj_name]['id'],
                        'shopify_id' => response['objects'][obj_name]['id'].to_s }
 
-          ## Add metafield to track Wombat ID
+          ## Add metafield to track FlowLink ID
           shopify.add_metafield obj_name,
                                 response['objects'][obj_name]['id'].to_s,
                                 @payload[obj_name]['id']
@@ -83,7 +83,7 @@ class ShopifyIntegration < EndpointBase::Sinatra::Base
       end
     end
 
-    def wombat_resend_add?(action_type, obj_name)
+    def flowlink_resend_add?(action_type, obj_name)
       action_type == 'add' && !@payload[obj_name]['shopify_id'].nil?
     end
 

@@ -21,14 +21,14 @@ class ShopifyAPI
           unless variant.sku.blank?
             inventory = Inventory.new
             inventory.add_obj variant
-            inventories << inventory.wombat_obj
+            inventories << inventory.flowlink_obj
           end
         end
       end
     end
 
     {
-      'objects' => Util.wombat_array(products),
+      'objects' => Util.flowlink_array(products),
       'message' => "Successfully retrieved #{products.length} products " +
                    "from Shopify.",
       'additional_objs' => inventories,
@@ -48,7 +48,7 @@ class ShopifyAPI
           unless variant.sku.blank?
             inventory = Inventory.new
             inventory.add_obj variant
-            inventories << inventory.wombat_obj
+            inventories << inventory.flowlink_obj
           end
         end
       end
@@ -66,7 +66,7 @@ class ShopifyAPI
 
   def get_orders
     get_webhook_results 'orders', Order
-    orders = Util.wombat_array(get_objs('orders', Order))
+    orders = Util.flowlink_array(get_objs('orders', Order))
 
     response = {
       'objects' => orders,
@@ -78,7 +78,7 @@ class ShopifyAPI
     if @config[:create_shipments].to_i == 1
       shipments = Array.new
       orders.each do |order|
-        shipments << Shipment.wombat_obj_from_order(order)
+        shipments << Shipment.flowlink_obj_from_order(order)
       end
 
       response.merge({
@@ -92,7 +92,7 @@ class ShopifyAPI
 
   def add_product
     product = Product.new
-    product.add_wombat_obj @payload['product'], self
+    product.add_flowlink_obj @payload['product'], self
     result = api_post 'products.json', product.shopify_obj
 
     {
@@ -104,7 +104,7 @@ class ShopifyAPI
 
   def update_product
     product = Product.new
-    product.add_wombat_obj @payload['product'], self
+    product.add_flowlink_obj @payload['product'], self
 
     ## Using shopify_obj_no_variants is a workaround until
     ## specifying variants' Shopify IDs is added
@@ -137,7 +137,7 @@ class ShopifyAPI
 
   def add_customer
     customer = Customer.new
-    customer.add_wombat_obj @payload['customer'], self
+    customer.add_flowlink_obj @payload['customer'], self
     result = api_post 'customers.json', customer.shopify_obj
 
     {
@@ -149,7 +149,7 @@ class ShopifyAPI
 
   def update_customer
     customer = Customer.new
-    customer.add_wombat_obj @payload['customer'], self
+    customer.add_flowlink_obj @payload['customer'], self
 
     begin
       result = api_put "customers/#{customer.shopify_id}.json",
@@ -171,7 +171,7 @@ class ShopifyAPI
 
   def set_inventory
     inventory = Inventory.new
-    inventory.add_wombat_obj @payload['inventory']
+    inventory.add_flowlink_obj @payload['inventory']
     puts "INV: " + @payload['inventory'].to_json
     shopify_id = inventory.shopify_id.blank? ?
                     find_product_shopify_id_by_sku(inventory.sku) : inventory.shopify_id
@@ -189,29 +189,29 @@ class ShopifyAPI
     }
   end
 
-  def add_metafield obj_name, shopify_id, wombat_id
+  def add_metafield obj_name, shopify_id, flowlink_id
     api_obj_name = (obj_name == "inventory" ? "product" : obj_name)
 
     api_post "#{api_obj_name}s/#{shopify_id}/metafields.json",
              Metafield.new(@payload[obj_name]['id']).shopify_obj
   end
 
-  def wombat_id_metafield obj_name, shopify_id
-    wombat_id = nil
+  def flowlink_id_metafield obj_name, shopify_id
+    flowlink_id = nil
 
     api_obj_name = (obj_name == "inventory" ? "product" : obj_name)
 
     metafields_array = api_get "#{api_obj_name}s/#{shopify_id}/metafields"
     unless metafields_array.nil? || metafields_array['metafields'].nil?
       metafields_array['metafields'].each do |metafield|
-        if metafield['key'] == 'wombat_id'
-          wombat_id = metafield['value']
+        if metafield['key'] == 'flowlink_id'
+          flowlink_id = metafield['value']
           break
         end
       end
     end
 
-    wombat_id
+    flowlink_id
   end
 
   def order order_id
@@ -230,7 +230,7 @@ class ShopifyAPI
   private
 
   def get_webhook_results obj_name, obj, get_objs = true
-    objs = Util.wombat_array(get_objs ? get_objs(obj_name, obj) : obj)
+    objs = Util.flowlink_array(get_objs ? get_objs(obj_name, obj) : obj)
     get_reply objs, "Successfully retrieved #{objs.length} #{obj_name} " +
                     "from Shopify."
   end

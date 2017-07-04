@@ -1,16 +1,16 @@
 class Util
 
-  def self.wombat_array objs
-    wombat_array = Array.new
+  def self.flowlink_array objs
+    flowlink_array = Array.new
     objs.each do |obj|
-      wombat_obj = obj.wombat_obj
-      if wombat_obj.kind_of?(Array)
-        wombat_array += obj.wombat_obj
+      flowlink_obj = obj.flowlink_obj
+      if flowlink_obj.kind_of?(Array)
+        flowlink_array += obj.flowlink_obj
       else
-        wombat_array << obj.wombat_obj
+        flowlink_array << obj.flowlink_obj
       end
     end
-    wombat_array
+    flowlink_array
   end
 
   def self.shopify_array objs
@@ -21,14 +21,14 @@ class Util
     shopify_array
   end
 
-  def self.wombat_shipment_status shopify_status
+  def self.flowlink_shipment_status shopify_status
     (shopify_status == 'success') ? 'shipped' : 'ready'
   end
 
-  def self.shopify_shipment_status wombat_status
+  def self.shopify_shipment_status flowlink_status
     shopify_status = 'error'
 
-    case wombat_status
+    case flowlink_status
     when 'shipped'
       shopify_status = 'success'
     when 'ready'
@@ -40,16 +40,16 @@ class Util
     shopify_status
   end
 
-  def self.shopify_apikey wombat_config
-    wombat_config['shopify_apikey']
+  def self.shopify_apikey flowlink_config
+    flowlink_config['shopify_apikey']
   end
 
-  def self.shopify_password wombat_config
-    wombat_config['shopify_password']
+  def self.shopify_password flowlink_config
+    flowlink_config['shopify_password']
   end
 
-  def self.shopify_host wombat_config
-    wombat_config['shopify_host']
+  def self.shopify_host flowlink_config
+    flowlink_config['shopify_host']
   end
 
 end

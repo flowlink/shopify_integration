@@ -8,7 +8,7 @@ class Shipment
     @source = Util.shopify_host shopify_api.config
     order = shopify_api.order(@shopify_order_id).first
     @email = order.email
-    @status = Util.wombat_shipment_status shopify_shipment['status']
+    @status = Util.flowlink_shipment_status shopify_shipment['status']
     @shipping_method = (shopify_shipment['tracking_company'] || 'tracking company not set') + ' / ' +
                        (shopify_shipment['service'] || 'service not set')
     @tracking = shopify_shipment['tracking_number']
@@ -25,11 +25,11 @@ class Shipment
     self
   end
 
-  def add_wombat_obj wombat_shipment, shopify_api
-    @shopify_order_id = wombat_shipment['id']
-    @status = Util.shopify_shipment_status wombat_shipment['status']
-    @shipping_method = wombat_shipment['shipping_method']
-    @tracking_number = wombat_shipment['tracking']
+  def add_flowlink_obj flowlink_shipment, shopify_api
+    @shopify_order_id = flowlink_shipment['id']
+    @status = Util.shopify_shipment_status flowlink_shipment['status']
+    @shipping_method = flowlink_shipment['shipping_method']
+    @tracking_number = flowlink_shipment['tracking']
 
     self
   end
@@ -42,7 +42,7 @@ class Shipment
     }
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'id' => @shopify_order_id.to_s,
       'shopify_id' => @shopify_id.to_s,
@@ -55,11 +55,11 @@ class Shipment
       'shipped_at' => @shipped_at,
       'shipping_address' => @shipping_address,
       'billing_address' => @billing_address,
-      'items' => Util.wombat_array(@line_items)
+      'items' => Util.flowlink_array(@line_items)
     }
   end
 
-  def self.wombat_obj_from_order order
+  def self.flowlink_obj_from_order order
     {
       'id' => order['id'],
       'shopify_order_id' => order['shopify_id'],

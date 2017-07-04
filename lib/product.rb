@@ -38,39 +38,39 @@ class Product
     self
   end
 
-  def add_wombat_obj wombat_product, shopify_api
-    @shopify_id = wombat_product['shopify_id']
-    @wombat_id = wombat_product['id'].to_s
-    @name = wombat_product['name']
-    @description = wombat_product['description']
+  def add_flowlink_obj flowlink_product, shopify_api
+    @shopify_id = flowlink_product['shopify_id']
+    @flowlink_id = flowlink_product['id'].to_s
+    @name = flowlink_product['name']
+    @description = flowlink_product['description']
 
     @options = Array.new
-    unless wombat_product['options'].blank?
-      wombat_product['options'].each do |wombat_option|
+    unless flowlink_product['options'].blank?
+      flowlink_product['options'].each do |flowlink_option|
         option = Option.new
-        option.add_wombat_obj wombat_option
+        option.add_flowlink_obj flowlink_option
         @options << option
       end
     else
       option = Option.new
-      option.add_wombat_obj 'Default'
+      option.add_flowlink_obj 'Default'
       @options << option
     end
 
     @variants = Array.new
-    unless wombat_product['variants'].nil?
-      wombat_product['variants'].each do |wombat_variant|
+    unless flowlink_product['variants'].nil?
+      flowlink_product['variants'].each do |flowlink_variant|
         variant = Variant.new
-        variant.add_wombat_obj wombat_variant
+        variant.add_flowlink_obj flowlink_variant
         @variants << variant
       end
     end
 
     @images = Array.new
-    unless wombat_product['images'].nil?
-      wombat_product['images'].each do |wombat_image|
+    unless flowlink_product['images'].nil?
+      flowlink_product['images'].each do |flowlink_image|
         image = Image.new
-        image.add_wombat_obj wombat_image
+        image.add_flowlink_obj flowlink_image
         @images << image
       end
     end
@@ -83,7 +83,7 @@ class Product
     self
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'id' => @shopify_id.to_s,
       'shopify_id' => @shopify_id.to_s,
@@ -92,9 +92,9 @@ class Product
       'sku' => @name,
       'description' => @description,
       'meta_description' => @description,
-      'options' => Util.wombat_array(@options),
-      'variants' => Util.wombat_array(@variants),
-      'images' => Util.wombat_array(@images)
+      'options' => Util.flowlink_array(@options),
+      'variants' => Util.flowlink_array(@variants),
+      'images' => Util.flowlink_array(@images)
     }
   end
 

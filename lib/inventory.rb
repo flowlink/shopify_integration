@@ -11,17 +11,17 @@ class Inventory
     self
   end
 
-  def add_wombat_obj wombat_inventory
-    @sku = wombat_inventory['product_id']
-    @quantity = wombat_inventory['quantity']
-    unless wombat_inventory['shopify_id'].nil?
-      @shopify_id = wombat_inventory['shopify_id']
+  def add_flowlink_obj flowlink_inventory
+    @sku = flowlink_inventory['product_id']
+    @quantity = flowlink_inventory['quantity']
+    unless flowlink_inventory['shopify_id'].nil?
+      @shopify_id = flowlink_inventory['shopify_id']
     end
 
     self
   end
 
-  def wombat_obj
+  def flowlink_obj
     {
       'id' => @sku,
       'product_id' => @sku,
