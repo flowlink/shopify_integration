@@ -3,7 +3,6 @@ require 'rest-client'
 require 'pp'
 
 class ShopifyAPI
-  include Shopify::APIHelper
 
   attr_accessor :order, :config, :payload, :request
 
@@ -93,7 +92,9 @@ class ShopifyAPI
   def add_product
     product = Product.new
     product.add_flowlink_obj @payload['product'], self
-    result = api_post 'products.json', product.shopify_obj
+    result = Shopify::APIHelper.api_post 'products.json',
+                                         product.shopify_obj,
+                                         @config
 
     {
       'objects' => result,
@@ -108,20 +109,21 @@ class ShopifyAPI
 
     ## Using shopify_obj_no_variants is a workaround until
     ## specifying variants' Shopify IDs is added
-    master_result = api_put(
-      "products/#{product.shopify_id}.json",
-      product.shopify_obj_no_variants
-    )
+    master_result = Shopify::APIHelper.api_put "products/#{product.shopify_id}.json",
+                                               product.shopify_obj_no_variants,
+                                               @config
 
     product.variants.each do |variant|
       if variant_id = (variant.shopify_id || find_variant_shopify_id(product.shopify_id, variant.sku))
-        api_put(
-          "variants/#{variant_id}.json",
-          variant.shopify_obj
-        )
+        Shopify::APIHelper.api_put "variants/#{variant_id}.json",
+                                   variant.shopify_obj,
+                                   @config
       else
         begin
-          api_post("products/#{product.shopify_id}/variants.json", variant.shopify_obj)
+          Shopify::APIHelper.api_post(
+            "products/#{product.shopify_id}/variants.json",
+            variant.shopify_obj,
+            @config)
         rescue RestClient::UnprocessableEntity
           # theres already a variant with same options, bail.
         end
@@ -138,7 +140,9 @@ class ShopifyAPI
   def add_customer
     customer = Customer.new
     customer.add_flowlink_obj @payload['customer'], self
-    result = api_post 'customers.json', customer.shopify_obj
+    result = Shopify::APIHelper.api_post 'customers.json',
+                                         customer.shopify_obj,
+                                         @config
 
     {
       'objects' => result,
@@ -152,14 +156,17 @@ class ShopifyAPI
     customer.add_flowlink_obj @payload['customer'], self
 
     begin
-      result = api_put "customers/#{customer.shopify_id}.json",
-                     customer.shopify_obj
-    rescue RestClient::UnprocessableEntity => e
+      result = Shopify::APIHelper.api_put "customers/#{customer.shopify_id}.json",
+                                          customer.shopify_obj,
+                                          @config
+    rescue RestClient::UnprocessableEntity => _e
       # retries without addresses to avoid duplication bug
       customer_without_addresses = customer.shopify_obj
       customer_without_addresses["customer"].delete("addresses")
 
-      result = api_put "customers/#{customer.shopify_id}.json", customer_without_addresses
+      result = Shopify::APIHelper.api_put "customers/#{customer.shopify_id}.json",
+                                          customer_without_addresses,
+                                          @config
     end
 
     {
@@ -178,8 +185,9 @@ class ShopifyAPI
 
     message = 'Could not find item with SKU of ' + inventory.sku
     unless shopify_id.blank?
-      result = api_put "variants/#{shopify_id}.json",
-                       {'variant' => inventory.shopify_obj}
+      result = Shopify::APIHelper.api_put "variants/#{shopify_id}.json",
+                                          {'variant' => inventory.shopify_obj},
+                                          @config
       message = "Set inventory of SKU #{inventory.sku} " +
                 "to #{inventory.quantity}."
     end
@@ -192,8 +200,9 @@ class ShopifyAPI
   def add_metafield obj_name, shopify_id, flowlink_id
     api_obj_name = (obj_name == "inventory" ? "product" : obj_name)
 
-    api_post "#{api_obj_name}s/#{shopify_id}/metafields.json",
-             Metafield.new(@payload[obj_name]['id']).shopify_obj
+    Shopify::APIHelper.api_post "#{api_obj_name}s/#{shopify_id}/metafields.json",
+                                Metafield.new(@payload[obj_name]['id']).shopify_obj,
+                                @config
   end
 
   def flowlink_id_metafield obj_name, shopify_id
@@ -201,7 +210,8 @@ class ShopifyAPI
 
     api_obj_name = (obj_name == "inventory" ? "product" : obj_name)
 
-    metafields_array = api_get "#{api_obj_name}s/#{shopify_id}/metafields"
+    metafields_array = Shopify::APIHelper.api_get "#{api_obj_name}s/#{shopify_id}/metafields",
+                                                  {}, @config
     unless metafields_array.nil? || metafields_array['metafields'].nil?
       metafields_array['metafields'].each do |metafield|
         if metafield['key'] == 'flowlink_id'
@@ -244,7 +254,7 @@ class ShopifyAPI
 
   def get_objs objs_name, obj_class
     objs = Array.new
-    shopify_objs = api_get objs_name
+    shopify_objs = Shopify::APIHelper.api_get objs_name, {}, @config
     if shopify_objs.values.first.kind_of?(Array)
       shopify_objs.values.first.each do |shopify_obj|
         obj = obj_class.new
@@ -261,7 +271,9 @@ class ShopifyAPI
   end
 
   def find_variant_shopify_id(product_shopify_id, variant_sku)
-    variants = api_get("products/#{product_shopify_id}/variants")["variants"]
+    variants = Shopify::APIHelper.api_get(
+      "products/#{product_shopify_id}/variants", {}, @config
+    )["variants"],
 
     if variant = variants.find {|v| v["sku"] == variant_sku}
       variant["id"]
@@ -269,14 +281,15 @@ class ShopifyAPI
   end
 
   def find_product_shopify_id_by_sku sku
-    count = (api_get 'products/count')['count']
+    count = (Shopify::APIHelper.api_get 'products/count', {}, @config)['count']
     page_size = 250
     pages = (count / page_size.to_f).ceil
     current_page = 1
 
     while current_page <= pages do
-      products = api_get 'products',
-                         {'limit' => page_size, 'page' => current_page}
+      products = Shopify::APIHelper.api_get 'products',
+                                            {'limit' => page_size, 'page' => current_page},
+                                            @config
       current_page += 1
       products['products'].each do |product|
         product['variants'].each do |variant|
