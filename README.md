@@ -30,9 +30,14 @@ corresponding Shopify object.
 
 * **get_orders**: Retrieves a list of orders from Shopify with all details
   of line items, taxes, discounts, shipping charges etc in FlowLink official
-  format. Each order's 'id' will be the Shopify order ID. 'source' will be set
-  to your shopify_host parameter value. Also returns a list of shipment
-  objects associated with all orders.
+  format. Each order's 'id' will be the Shopify order ID, prefixed by either
+  1) the store's name and a dash (default), or 2) whatever is specified in
+  the "shopify_order_prefix" parameter associated with the flow (note that
+  QuickBooks Desktop will not accept an order number that is longer than 11
+  characters, so it is best to specify a "shopify_order_prefix" that is very
+  short if you intend to use this integration with any QB Desktop version).
+  'source' will be set to your shopify_host parameter value. Also returns a
+  list of shipment objects associated with all orders.
 * **get_products**: Retrieves a list of products from shopify.
   Also returns a list of inventory items, one for each product.
 * **add_product**
