@@ -52,4 +52,14 @@ class Util
     flowlink_config['shopify_host']
   end
 
+  def self.flowlink_order_id flowlink_config, shopify_order_number
+    store_name = self.shopify_host(flowlink_config).split('.')[0]
+    order_prefix = flowlink_config['shopify_order_prefix']
+    if order_prefix.nil? || order_prefix.empty?
+      return store_name.upcase + '-' + shopify_order_number.to_s
+    else
+      return order_prefix + shopify_order_number.to_s
+    end
+  end
+
 end
