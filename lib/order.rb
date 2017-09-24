@@ -18,7 +18,7 @@ class Order
     shopify_order['shipping_lines'].each do |shipping_line|
       @totals_shipping += shipping_line['price'].to_f
     end
-    @payments = Array.new
+    @payments = []
     @totals_payment = 0.00
     shopify_api.transactions(@shopify_id).each do |transaction|
       if (transaction.kind == 'capture' or transaction.kind == 'sale') and
@@ -29,10 +29,17 @@ class Order
       end
     end
     @totals_order = shopify_order['total_price'].to_f
-    @line_items = Array.new
+
+    @line_items = []
     shopify_order['line_items'].each do |shopify_li|
       line_item = LineItem.new
       @line_items << line_item.add_shopify_obj(shopify_li, shopify_api)
+    end
+
+    @tax_line_items = []
+    shopify_order['tax_lines'].each do |shopify_tax_li|
+      tax_line_item = TaxLineItem.new
+      @tax_line_items << tax_line_item.add_shopify_obj(shopify_tax_li)
     end
 
     unless shopify_order['shipping_address'].nil?
@@ -84,6 +91,7 @@ class Order
         'order' => @totals_order
       },
       'line_items' => Util.flowlink_array(@line_items),
+      'tax_line_items' => Util.flowlink_array(@tax_line_items),
       'adjustments' => [
         {
           'name' => 'Tax',
