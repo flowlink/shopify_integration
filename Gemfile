@@ -30,3 +30,4 @@ group :production do
 end
 
 gem 'endpoint_base', github: 'flowlink/endpoint_base'
+gem 'sinatra-contrib' # For sinatra/reloader which autoreloads modules on change

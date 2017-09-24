@@ -4,6 +4,14 @@ require "endpoint_base"
 require_all 'lib'
 
 class ShopifyIntegration < EndpointBase::Sinatra::Base
+
+  # Force Sinatra to autoreload this file or any file in the lib directory
+  # when they change in development
+  configure :development do
+    register Sinatra::Reloader
+    also_reload './lib/**/*'
+  end
+
   post '/*_shipment' do # /add_shipment or /update_shipment
     summary = Shopify::Shipment.new(@payload['shipment'], @config).ship!
 
@@ -32,7 +40,7 @@ class ShopifyIntegration < EndpointBase::Sinatra::Base
            return result 200
         end
 
-        shopify = ShopifyAPI.new(@payload, @config)
+        shopify = Shopify::API.new(@payload, @config)
         response  = shopify.send(action)
 
         case action_type
