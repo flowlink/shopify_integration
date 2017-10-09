@@ -1,6 +1,6 @@
 module Shopify
   module APIHelper
-    @@api_limit = 0.5
+    @@api_limit = 0.6
     @@last_api_time = Time.now - @@api_limit
 
     def self.api_get resource, data, config
